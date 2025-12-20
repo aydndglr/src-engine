@@ -8,14 +8,14 @@ import (
 	"golang.design/x/clipboard"
 )
 
-// ClipboardManager: Pano senkronizasyonunu yönetir.
+
 type ClipboardManager struct {
 	mu           sync.Mutex
 	lastText     string
 	sendCallback func(text string) // Panoda değişiklik olunca burayı tetikleyeceğiz
 }
 
-// Init: Pano sistemini başlatır.
+
 func Init() error {
 	// Pano servisini başlat
 	err := clipboard.Init()

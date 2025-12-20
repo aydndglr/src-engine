@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-// GenerateTLSConfig: QUIC bağlantısı için gerekli olan
-// güvenli sertifikayı (Self-Signed) anlık olarak üretir.
 func GenerateTLSConfig() *tls.Config {
 	// 1. Kriptografik Anahtar Oluştur (RSA 2048-bit)
 	key, err := rsa.GenerateKey(rand.Reader, 2048)

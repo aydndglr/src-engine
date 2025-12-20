@@ -80,10 +80,6 @@ func EncodeInputEvent(ev InputEvent) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// DecodeInputEvent: Byte dizisini Event'e çevirir
-//
-// Bu fonksiyon hem V2 (text length'li) hem de eski V1 formatını destekler.
-// NOT: TCP stream'de güvenli kullanım için V2 önerilir.
 func DecodeInputEvent(data []byte) (InputEvent, error) {
 	if len(data) < inputHeaderV1Size {
 		return InputEvent{}, errors.New("paket çok kısa")

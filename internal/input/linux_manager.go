@@ -17,10 +17,9 @@ type LinuxManager struct {
 	screenHeight int
 }
 
-// NewManager: Linux için fabrika fonksiyonu
+
 func NewManager() (Manager, error) {
-	// Ekran çözünürlüğünü öğren (Absolute mouse hesaplaması için şart)
-	// Çıktı örneği: "1920 1080"
+
 	out, err := exec.Command("xdotool", "getdisplaygeometry").Output()
 	w, h := 1920, 1080 // Varsayılan (Fallback)
 
@@ -43,10 +42,9 @@ func NewManager() (Manager, error) {
 	}, nil
 }
 
-// Reset: Bağlantı koptuğunda takılı kalan tuşları kurtarır.
+
 func (m *LinuxManager) Reset() {
-	// Kritik tuşları serbest bırak (CTRL, ALT, SHIFT, SUPER/WIN)
-	// Linux'ta xdotool ile bunları yukarı kaldırmak sistemi kurtarır.
+
 	_ = runXdo("keyup", "Control_L", "Control_R", "Alt_L", "Alt_R", "Shift_L", "Shift_R", "Super_L", "Super_R")
 }
 
@@ -62,8 +60,7 @@ func (m *LinuxManager) Apply(ev protocol.InputEvent) error {
 }
 
 func (m *LinuxManager) handleMouse(ev protocol.InputEvent) error {
-	// Frontend artık 0-65535 (Absolute) değer gönderiyor.
-	// Linux (xdotool) piksel bekler. Dönüşüm yapıyoruz:
+
 	
 	realX := (int(ev.X) * m.screenWidth) / 65535
 	realY := (int(ev.Y) * m.screenHeight) / 65535
@@ -110,7 +107,7 @@ func (m *LinuxManager) handleKeyboard(ev protocol.InputEvent) error {
 	// Not: xdotool ham JS keycode (örn: 13, 65) tanımaz. 
 	// Linux için tam bir Keymap tablosu gerekir (JS -> Keysym).
 	// Şimdilik sadece metin yazma ve temel komutlar aktif.
-	// İleride buraya CGO ile XTestFakeKeyEvent eklenecek.
+	// İleride buraya CGO ile XTestFakeKeyEvent ekleyeceğim
 	
 	return nil
 }
