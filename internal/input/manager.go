@@ -1,7 +1,7 @@
 package input
 
 import (
-	"src-engine/internal/protocol"
+	"src-engine-v2/internal/protocol"
 )
 
 // Manager: Klavye ve Mouse kontrolünü sağlayan arayüz.

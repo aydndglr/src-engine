@@ -7,10 +7,10 @@ import (
 	"net"
 	"time"
 
-	"src-engine/internal/input"
-	"src-engine/internal/network"
-	"src-engine/internal/protocol"
-	"src-engine/internal/video"
+	"src-engine-v2/internal/input"
+	"src-engine-v2/internal/network"
+	"src-engine-v2/internal/protocol"
+	"src-engine-v2/internal/video"
 )
 
 // Config: Motorun çalışma ayarları

@@ -1,11 +1,11 @@
-module src-engine
+module src-engine-v2
 
 go 1.25.5
 
 require (
 	github.com/gen2brain/malgo v0.11.24
 	golang.design/x/clipboard v0.7.1
-	tailscale.com v1.92.3
+	tailscale.com v1.92.4
 )
 
 require (

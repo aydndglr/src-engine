@@ -3,7 +3,7 @@
 package input
 
 import (
-	"src-engine/internal/protocol"
+	"src-engine-v2/internal/protocol"
 	"syscall"
 	"time"
 	"unsafe"
