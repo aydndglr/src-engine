@@ -53,16 +53,16 @@ func NewApp(cfg *config.Config) *App {
 }
 
 func (a *App) Run() {
-	fmt.Println("🚀 SRC-Engine V2 Başlatılıyor...")
+	fmt.Println("🚀 SRC-Engine V2 is starting up...")
 
 	// 1. DENEME MODU KONTROLÜ (TRIAL CHECK)
 	isTrial := os.Getenv("SRC_TRIAL_MODE") == "1"
 	
 	if isTrial {
-		fmt.Println("⏳ Ücretsiz Deneme Modu Aktif (Anakart ID Kontrolü)...")
+		fmt.Println("⏳ Free Trial Mode Active ...")
 		if err := checkTrialLimit(); err != nil {
-			fmt.Printf("\n🛑 DENEME SÜRESİ DOLDU!\n   -> %v\n", err)
-			fmt.Println("   -> Devam etmek için lütfen bir lisans anahtarı satın alın.")
+			fmt.Printf("\n🛑 TRIAL PERIOD HAS ENDED!\n   -> %v\n", err)
+			fmt.Println("   -> To continue, please purchase a license key..")
 			time.Sleep(5 * time.Second)
 			os.Exit(1)
 		}
@@ -71,30 +71,30 @@ func (a *App) Run() {
 	}
 
 	// 2. AĞ BAĞLANTISI (VPN & ANAHTAR DOĞRULAMA)
-	fmt.Println("🔐 Ağ Anahtarı Doğrulanıyor...")
+	fmt.Println("🔐 Network Switch Verification...")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	if err := a.Network.Start(ctx); err != nil {
-		fmt.Printf("\n🛑 BAĞLANTI HATASI:\n   -> %v\n", err)
+		fmt.Printf("\n🛑 CONNECTION ERROR:\n   -> %v\n", err)
 		if isTrial {
-			fmt.Println("   -> Ücretsiz sunucu yoğun olabilir veya anahtar süresi dolmuş olabilir.")
+			fmt.Println("   -> The free server might be busy or the key might have expired..")
 		} else {
-			fmt.Println("   -> Lisans anahtarınız geçersiz veya süresi dolmuş.")
+			fmt.Println("   -> Your license key is invalid or has expired..")
 		}
 		time.Sleep(5 * time.Second)
 		os.Exit(1)
 	}
 
-	fmt.Println("✅ Bağlantı Başarılı!")
+	fmt.Println("✅ Connection Successful!")
 
 	// 3. MOD SEÇİMİ VE BAŞLATMA
 	
 	if a.Config.Network.ConnectIP != "" {
 		// --- CLIENT MODU (İzleyici) ---
 		targetIP := a.Config.Network.ConnectIP
-		fmt.Printf("📺 CLIENT MODU AKTİF -> Hedef: %s\n", targetIP)
-		fmt.Println("   (Electron UI bekleniyor...)")
+		fmt.Printf("📺 CLIENT MODE ACTIVE -> Target: %s\n", targetIP)
+		fmt.Println("   (UI pending...)")
 
 		// 4 Kanal İçin Proxy Başlat (Localhost <-> VPN)
 		go a.startProxy(config.PortStream, targetIP)
@@ -104,12 +104,12 @@ func (a *App) Run() {
 
 	} else {
 		// --- HOST MODU (Yayıncı) ---
-		fmt.Println("🎥 HOST MODU AKTİF -> Yayın Başlıyor...")
+		fmt.Println("🎥 HOST MODE ACTIVE -> Broadcast Begins...")
 
 		// 🔥 PANO (CLIPBOARD) ENTEGRASYONU
 		// Sadece Host tarafında gerçek clipboard servisini başlatıyoruz.
 		if err := clipboard.Init(); err != nil {
-			fmt.Println("⚠️ Pano servisi başlatılamadı:", err)
+			fmt.Println("⚠️ The control panel service could not be started.:", err)
 		} else {
 			// Dinleyiciyi başlat
 			a.ClipboardSvc.StartWatcher(context.Background())
@@ -127,11 +127,11 @@ func (a *App) Run() {
 					a.ClipboardSvc.Write(content)
 					// fmt.Println("📋 Client'tan pano verisi alındı.")
 				} else {
-					fmt.Printf("💬 Sohbet: %s\n", msg)
+					fmt.Printf("💬 Chat: %s\n", msg)
 				}
 			})
 			
-			fmt.Println("📋 Pano Senkronizasyonu Aktif!")
+			fmt.Println("📋 Dashboard Synchronization Active!")
 		}
 
 		go func() { a.StreamSvc.Start(mustListen(a.Network, config.PortStream)) }()
@@ -140,14 +140,14 @@ func (a *App) Run() {
 		go func() { a.ChatSvc.Start(mustListen(a.Network, config.PortChat)) }()
 	}
 
-	fmt.Println("✅ SİSTEM AKTİF! (CTRL+C ile kapat)")
+	fmt.Println("✅ SYSTEM ACTIVE! (Close with CTRL+C)")
 
 	// 4. KAPANIŞ SİNYALİNİ BEKLE
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	<-sigs
 
-	fmt.Println("\n👋 Kapatılıyor...")
+	fmt.Println("\n👋 It's being shut down....")
 }
 
 // --- CLIENT PROXY YARDIMCILARI ---
@@ -156,7 +156,7 @@ func (a *App) startProxy(port int, targetIP string) {
 	// Yerel UI (Electron) için dinle
 	localListener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
-		fmt.Printf("❌ Proxy Hatası (Port %d): %v\n", port, err)
+		fmt.Printf("❌ Proxy Error (Port %d): %v\n", port, err)
 		return
 	}
 	
@@ -170,7 +170,7 @@ func (a *App) startProxy(port int, targetIP string) {
 		// VPN üzerinden hedefe bağlan
 		remoteConn, err := a.Network.Dial(context.Background(), targetIP, port)
 		if err != nil {
-			fmt.Printf("⚠️ Hedefe bağlanılamadı (%s:%d): %v\n", targetIP, port, err)
+			fmt.Printf("⚠️ The target could not be connected. (%s:%d): %v\n", targetIP, port, err)
 			localConn.Close()
 			continue
 		}
@@ -192,7 +192,7 @@ func pipe(src, dst net.Conn) {
 func mustListen(n *network.Manager, port int) net.Listener {
 	ln, err := n.Listen(port)
 	if err != nil {
-		fmt.Printf("Kritik Hata: Port %d açılamadı: %v\n", port, err)
+		fmt.Printf("Critical Error: Port %d could not be opened: %v\n", port, err)
 		os.Exit(1)
 	}
 	return ln
@@ -261,10 +261,10 @@ func checkTrialLimit() error {
 	}
 
 	if td.UsedMins >= TrialLimitMinutes {
-		return fmt.Errorf("bu cihazda deneme süresi (%d dk) dolmuştur", TrialLimitMinutes)
+		return fmt.Errorf("The trial period (%d min) has expired on this device.", TrialLimitMinutes)
 	}
 
-	fmt.Printf("⏳ Kalan Süre: %d dakika\n", TrialLimitMinutes-td.UsedMins)
+	fmt.Printf("⏳ Remaining Time: %d minutes\n", TrialLimitMinutes-td.UsedMins)
 	return nil
 }
 
@@ -286,7 +286,7 @@ func startTrialTicker() {
 		td.LastSeen = time.Now()
 
 		if td.UsedMins > TrialLimitMinutes {
-			fmt.Println("\n🛑 DENEME SÜRESİ DOLDU! Uygulama kapatılıyor...")
+			fmt.Println("\n🛑 TRIAL PERIOD HAS EXPIRED! The application is being shut down....")
 			os.Exit(1)
 		}
 

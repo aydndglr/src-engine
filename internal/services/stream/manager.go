@@ -45,7 +45,7 @@ func NewManager(cfg *config.Config) *Manager {
 
 // Start: Belirtilen listener üzerinden bağlantıları kabul eder
 func (m *Manager) Start(ln net.Listener) {
-	fmt.Printf("🎥 Stream Servisi Hazır (Port: %d)\n", config.PortStream)
+	fmt.Printf("🎥 Streaming Service Ready (Port: %d)\n", config.PortStream)
 
 	for {
 		conn, err := ln.Accept()
@@ -64,7 +64,7 @@ func (m *Manager) Start(ln net.Listener) {
 		m.stopChan = make(chan struct{}) // Kanalı yenile
 		m.mu.Unlock()
 
-		fmt.Println("🎥 Yeni İzleyici Bağlandı:", conn.RemoteAddr())
+		fmt.Println("🎥 New Viewer Connected:", conn.RemoteAddr())
 
 		m.handleConnection(conn)
 	}
@@ -84,12 +84,12 @@ func (m *Manager) handleConnection(conn net.Conn) {
 		if m.Encoder != nil {
 			m.Encoder.Close()
 		}
-		fmt.Println("🎥 Yayın Sonlandı.")
+		fmt.Println("🎥 Broadcast Ended.")
 	}()
 
 	// 1. Video Başlatma
 	if err := m.Capturer.Start(); err != nil {
-		fmt.Println("❌ Capture hatası:", err)
+		fmt.Println("❌ Capture error:", err)
 		return
 	}
 	realW, realH := m.Capturer.Size()
@@ -98,7 +98,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 	// Not: FPS değeri Config'den geliyor (25 veya 30 ne ayarladıysan)
 	enc, err := NewEncoder(realW, realH, m.Config.Video.Width, m.Config.Video.Height, m.Config.Video.FPS)
 	if err != nil {
-		fmt.Println("❌ Encoder hatası:", err)
+		fmt.Println("❌ Encoder error:", err)
 		return
 	}
 	m.Encoder = enc
@@ -199,7 +199,7 @@ func (m *Manager) writeLoop(conn net.Conn, in <-chan []byte) {
 						if levelIdx > 0 {
 							levelIdx--
 							m.Encoder.SetBitrate(levels[levelIdx])
-							fmt.Printf("📉 Bitrate Düşürüldü: %d kbps\n", levels[levelIdx])
+							fmt.Printf("📉 Bitrate Reduced: %d kbps\n", levels[levelIdx])
 						}
 						congestedStart = time.Time{}
 						lastCheck = now
@@ -212,7 +212,7 @@ func (m *Manager) writeLoop(conn net.Conn, in <-chan []byte) {
 						if levelIdx < len(levels)-1 {
 							levelIdx++
 							m.Encoder.SetBitrate(levels[levelIdx])
-							fmt.Printf("📈 Bitrate Artırıldı: %d kbps\n", levels[levelIdx])
+							fmt.Printf("📈 Bitrate Increased: %d kbps\n", levels[levelIdx])
 						}
 						relaxedStart = time.Time{}
 						lastCheck = now

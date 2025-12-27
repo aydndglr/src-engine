@@ -18,7 +18,7 @@ type Manager struct {
 func Init() error {
 	err := clipboard.Init()
 	if err != nil {
-		return fmt.Errorf("pano sistemi başlatılamadı: %w", err)
+		return fmt.Errorf("The control panel system could not be started.: %w", err)
 	}
 	return nil
 }
@@ -60,7 +60,7 @@ func (m *Manager) StartWatcher(ctx context.Context) {
 
 			// Ağa gönder (Callback varsa)
 			if cb != nil {
-				fmt.Printf("📋 Pano Değişti (%d karakter), gönderiliyor...\n", len(text))
+				fmt.Printf("📋 The board has changed (%d characters), it is being sent....\n", len(text))
 				cb(text)
 			}
 		}
@@ -77,5 +77,5 @@ func (m *Manager) Write(text string) {
 	// İşletim sistemi panosuna yaz
 	clipboard.Write(clipboard.FmtText, []byte(text))
 	
-	fmt.Println("📋 Ağdan Pano Geldi ve Yazıldı.")
+	fmt.Println("📋 Network Dashboard Received and Written.")
 }

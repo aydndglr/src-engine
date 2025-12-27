@@ -18,19 +18,19 @@ func main() {
 	}
 
 	// Parametreleri al
-	hostname := flag.String("host", sysHostname, "Cihaz Adı (Varsayılan: Bilgisayar Adı)")
-	authKey := flag.String("key", "", "Headscale Auth Key (Boş bırakılırsa 120 dk Ücretsiz Mod)")
+	hostname := flag.String("host", sysHostname, "Device Name (Default: Computer Name)")
+	authKey := flag.String("key", "", "Headscale Auth Key (120 minutes Free Mode if left blank)")
 	
 	// 🆕 YENİ PARAMETRE: Client Modu için Hedef IP
-	connectIP := flag.String("connect", "", "Bağlanılacak Hedef IP (Client Modu)")
+	connectIP := flag.String("connect", "", "Target IP Address to Connect To (Client Mode)")
 
 	// Video Ayarları
-	width := flag.Int("w", 0, "Genişlik (0=Oto)")
-	height := flag.Int("h", 0, "Yükseklik (0=Oto)")
+	width := flag.Int("w", 0, "Width (0=Auto)")
+	height := flag.Int("h", 0, "Height (0=Auto)")
 	fps := flag.Int("fps", 25, "FPS")
 	
 	// Raw Mod (VLC vb. için headersız yayın)
-	raw := flag.Bool("raw", false, "Ham video modu (VLC uyumlu)")
+	raw := flag.Bool("raw", false, "Raw video mode (VLC-FfPlay compatible)")
 
 	flag.Parse()
 

@@ -36,7 +36,7 @@ func NewManager() *Manager {
 	// Malgo Context başlat (Logları kapat)
 	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, func(message string) {})
 	if err != nil {
-		log.Println("⚠️ Ses sistemi başlatılamadı:", err)
+		log.Println("⚠️ The sound system could not be started.:", err)
 		return nil
 	}
 
@@ -52,7 +52,7 @@ func (m *Manager) Start(ln net.Listener) {
 		return // Ses sistemi yoksa hiç başlama
 	}
 	
-	fmt.Printf("🔊 Ses Servisi Hazır (Port: %d)\n", config.PortAudio)
+	fmt.Printf("🔊 Audio Service Ready (Port: %d)\n", config.PortAudio)
 
 	for {
 		conn, err := ln.Accept()
@@ -70,7 +70,7 @@ func (m *Manager) Start(ln net.Listener) {
 		m.running = true
 		m.mu.Unlock()
 
-		fmt.Println("🔊 Ses Dinleyicisi Bağlandı.")
+		fmt.Println("🔊 Listener Connected.")
 		m.handleConnection(conn)
 	}
 }
@@ -86,12 +86,12 @@ func (m *Manager) handleConnection(conn net.Conn) {
 		m.mu.Unlock()
 		
 		m.stopCapture()
-		fmt.Println("🔊 Ses Yayını Bitti.")
+		fmt.Println("🔊 Audio Broadcast Ended.")
 	}()
 
 	// 1. Ses Yakalamayı Başlat
 	if err := m.startCapture(); err != nil {
-		fmt.Println("❌ Ses yakalama hatası:", err)
+		fmt.Println("❌ Audio capture error:", err)
 		return
 	}
 

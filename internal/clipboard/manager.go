@@ -20,7 +20,7 @@ func Init() error {
 	// Pano servisini başlat
 	err := clipboard.Init()
 	if err != nil {
-		return fmt.Errorf("pano sistemi başlatılamadı: %w", err)
+		return fmt.Errorf("The control panel system could not be started.: %w", err)
 	}
 	return nil
 }
@@ -61,7 +61,7 @@ func (m *ClipboardManager) StartWatcher(ctx context.Context) {
 
 			// Ağa gönder
 			if cb != nil {
-				fmt.Printf("📋 Pano Değişti (%d karakter), gönderiliyor...\n", len(text))
+				fmt.Printf("📋 The board has changed (%d characters), it is being sent....\n", len(text))
 				
 				// Bloklamaması için goroutine içinde çağırabiliriz
 				// ama ağ sırası bozulmasın diye düz çağırıyoruz.
@@ -83,8 +83,8 @@ func (m *ClipboardManager) Write(text string) {
 	
 	// Bilgi ver
 	if len(text) > 20 {
-		fmt.Printf("📋 Ağdan Pano Geldi: %s...\n", text[:20])
+		fmt.Printf("📋 A panel arrived from the network.: %s...\n", text[:20])
 	} else {
-		fmt.Printf("📋 Ağdan Pano Geldi: %s\n", text)
+		fmt.Printf("📋 A panel arrived from the network.: %s\n", text)
 	}
 }

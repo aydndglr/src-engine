@@ -1,3 +1,4 @@
+/*
 //go:build windows
 
 package license
@@ -77,5 +78,55 @@ func (m *Manager) Verify() error {
 	}
 
 	fmt.Printf("✅ Lisans Doğrulandı! Bitiş: %s\n", result.Expires)
+	return nil
+}
+	*/
+
+//go:build windows
+
+package license
+
+import (
+	"fmt"
+	"src-engine-v2/internal/config"
+	"syscall"
+)
+
+var useSysProcAttr = syscall.SysProcAttr{HideWindow: true}
+
+type Manager struct {
+	Config *config.Config
+}
+
+func NewManager(cfg *config.Config) *Manager {
+	return &Manager{Config: cfg}
+}
+
+// Verify: Headscale AuthKey var mı kontrol eder.
+// Key yoksa FREE/TRIAL moduna izin verir (error dönmez).
+func (m *Manager) Verify() error {
+	key := ""
+	if m.Config != nil {
+		key = m.Config.Headscale.AuthKey
+	}
+
+	// 1) Anahtar yoksa -> FREE/TRIAL moduna geçilecek (bloklama yok)
+	if key == "" {
+		fmt.Println("🆓 FREE/TRIAL MODE: Auth Key not entered (trial/free trial mode will be used)")
+		return nil
+	}
+
+	// 2) Anahtar var ama çok kısaysa -> Geçersiz format (burada blokla)
+	// Headscale preauth key örn: "tskey-auth-..." gibi uzun olur.
+	if len(key) < 20 { // 10 yerine 20 daha güvenli
+		return fmt.Errorf("INVALID_KEY: The key format is incorrect or too short.")
+	}
+
+	// 3) Anahtar var -> PRO modu denenecek (asıl doğrulama bağlantıda)
+	displayKey := key
+	if len(key) > 8 {
+		displayKey = key[:8] + "..."
+	}
+	fmt.Printf("🔐 PRO MODE: License key detected: %s (verification during connection)\n", displayKey)
 	return nil
 }

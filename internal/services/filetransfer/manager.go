@@ -219,7 +219,7 @@ func NewManager() *Manager {
 
 // Start: 9003 portunu dinler
 func (m *Manager) Start(ln net.Listener) {
-	fmt.Printf("📂 Dosya Transfer Servisi Hazır (Port: %d)\n", config.PortFile)
+	fmt.Printf("📂 File Transfer Service Ready (Port: %d)\n", config.PortFile)
 
 	for {
 		conn, err := ln.Accept()
@@ -236,7 +236,7 @@ func (m *Manager) Start(ln net.Listener) {
 		m.activeConn = conn
 		m.mu.Unlock()
 
-		fmt.Println("📂 [Bağlandı] Dosya transferi bekleniyor...")
+		fmt.Println("📂 [Connected] Waiting for file transfer...")
 		m.handleConnection(conn)
 	}
 }
@@ -249,7 +249,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 			m.activeConn = nil
 		}
 		m.mu.Unlock()
-		fmt.Println("📂 Dosya bağlantısı kapatıldı.")
+		fmt.Println("📂 File link closed..")
 	}()
 
 	var currentFile *os.File
@@ -273,7 +273,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 
 		// Güvenlik Limiti (Örn: 50MB chunk, dosya boyutu değil, paket boyutu)
 		if payloadSize > 50*1024*1024 {
-			fmt.Println("⚠️ Çok büyük veri paketi, bağlantı kesiliyor.")
+			fmt.Println("⚠️ A very large data packet is dropping the connection.")
 			return
 		}
 
@@ -290,7 +290,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 		case TypeFileStart:
 			var meta FileMetadata
 			if err := json.Unmarshal(payload, &meta); err != nil {
-				fmt.Println("❌ Dosya metadata hatası:", err)
+				fmt.Println("❌ File metadata error:", err)
 				continue
 			}
 
@@ -308,7 +308,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 
 			// Klasör yoksa oluştur
 			if err := os.MkdirAll(targetDir, 0755); err != nil {
-				fmt.Println("⚠️ Hedef klasör hatası, yerel klasöre geçiliyor.")
+				fmt.Println("⚠️ Target folder error, switching to local folder..")
 				cwd, _ := os.Getwd()
 				targetDir = filepath.Join(cwd, "Received_Files")
 				_ = os.MkdirAll(targetDir, 0755)
@@ -318,14 +318,14 @@ func (m *Manager) handleConnection(conn net.Conn) {
 			
 			f, err := os.Create(fullPath)
 			if err != nil {
-				fmt.Printf("❌ Dosya oluşturulamadı (%s): %v\n", fullPath, err)
+				fmt.Printf("❌ The file could not be created. (%s): %v\n", fullPath, err)
 				continue
 			}
 
 			currentFile = f
 			currentSize = meta.Size
 			received = 0
-			fmt.Printf("📥 Dosya Geliyor: %s\n   -> Konum: %s\n   -> Boyut: %d byte\n", meta.Name, fullPath, meta.Size)
+			fmt.Printf("📥 File Receiving: %s\n -> Location: %s\n -> Size: %d bytes\n", meta.Name, fullPath, meta.Size)
 
 		case TypeFileData:
 			if currentFile == nil {
@@ -334,7 +334,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 
 			n, err := currentFile.Write(payload)
 			if err != nil {
-				fmt.Println("❌ Yazma hatası:", err)
+				fmt.Println("❌ Typo:", err)
 				currentFile.Close()
 				currentFile = nil
 				continue
@@ -344,7 +344,7 @@ func (m *Manager) handleConnection(conn net.Conn) {
 			
 			// Bitti mi?
 			if received >= currentSize {
-				fmt.Println("✅ Dosya başarıyla kaydedildi.")
+				fmt.Println("✅ The file has been successfully saved..")
 				currentFile.Close()
 				currentFile = nil
 				currentSize = 0

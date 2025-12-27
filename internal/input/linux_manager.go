@@ -33,7 +33,7 @@ func NewManager() (Manager, error) {
 			}
 		}
 	} else {
-		fmt.Println("⚠️ LinuxManager: Ekran çözünürlüğü alınamadı, varsayılan 1920x1080 kullanılıyor.")
+		fmt.Println("⚠️ LinuxManager: Screen resolution could not be retrieved, default 1920x1080 is being used..")
 	}
 
 	return &LinuxManager{

@@ -339,7 +339,7 @@ func (e *Engine) StartClient(targetIP string, port int) error {
 	}
 
 	e.ActiveConn = conn
-	fmt.Println("📺 İZLEYİCİ MODU: Bağlantı kuruldu ->", targetIP)
+	fmt.Println("📺 SPECTATOR MODE: Connection established. ->", targetIP)
 
 	defer conn.Close()
 
@@ -352,7 +352,7 @@ func (e *Engine) StartClient(targetIP string, port int) error {
 		_ = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 
 		if _, err := io.ReadFull(conn, sizeBuf); err != nil {
-			fmt.Println("⚠️ Veri akışı kesildi:", err)
+			fmt.Println("⚠️ Data flow interrupted.:", err)
 			close(e.FrameChan)
 			return err
 		}
@@ -388,7 +388,7 @@ func (e *Engine) StartClient(targetIP string, port int) error {
 
 func (e *Engine) SendInput(ev protocol.InputEvent) error {
 	if e.ActiveConn == nil {
-		return fmt.Errorf("bağlantı yok")
+		return fmt.Errorf("No connection")
 	}
 	data, err := protocol.EncodeInputEvent(ev)
 	if err != nil {

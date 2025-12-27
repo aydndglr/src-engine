@@ -56,10 +56,10 @@ func (m *Manager) Start(ctx context.Context) error {
 
 	lc, err := m.Server.LocalClient()
 	if err != nil {
-		return fmt.Errorf("local client hatası: %v", err)
+		return fmt.Errorf("local client error: %v", err)
 	}
 
-	fmt.Println("⏳ VPN Ağına Bağlanılıyor...")
+	fmt.Println("⏳ Connecting to VPN Network...")
 
 	// Hazır Olana Kadar Bekle (Timeout config'den gelir)
 	timeoutCtx, cancel := context.WithTimeout(ctx, config.ConnectTimeout)
@@ -71,7 +71,7 @@ func (m *Manager) Start(ctx context.Context) error {
 	for {
 		select {
 		case <-timeoutCtx.Done():
-			return fmt.Errorf("zaman aşımı: VPN bağlantısı kurulamadı")
+			return fmt.Errorf("Timeout: VPN connection could not be established.")
 		case <-ticker.C:
 			st, err := lc.Status(ctx)
 			if err != nil {
@@ -83,7 +83,7 @@ func (m *Manager) Start(ctx context.Context) error {
 				for _, ip := range st.TailscaleIPs {
 					if ip.Is4() {
 						m.MyIP = ip.String()
-						fmt.Printf("✅ VPN Tüneli Kurulu! IP: %s\n", m.MyIP)
+						fmt.Printf("✅ VPN Tunnel Established! IP: %s\n", m.MyIP)
 						return nil
 					}
 				}

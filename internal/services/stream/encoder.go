@@ -128,7 +128,7 @@ func NewEncoder(inW, inH, outW, outH, fps int) (*Encoder, error) {
 
 	e.handle = C.init_encoder(C.int(outW), C.int(outH), C.int(fps), &e.param)
 	if e.handle == nil {
-		return nil, errors.New("x264 başlatılamadı")
+		return nil, errors.New("x264 failed to start.")
 	}
 
 	C.x264_picture_alloc(&e.picIn, C.X264_CSP_I420, C.int(outW), C.int(outH))

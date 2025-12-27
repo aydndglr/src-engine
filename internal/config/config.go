@@ -9,7 +9,7 @@ import (
 const (
 	// Uygulama Bilgileri
 	AppName    = "SRC-Engine"
-	AppVersion = "2.0.0"
+	AppVersion = "2.0.2"
 
 	// Port Yapılandırması (Sanal Portlar)
 	PortControl = 9000 // Kimlik doğrulama, ayarlar, heartbeat
@@ -72,3 +72,4 @@ const (
 	ReadTimeout    = 10 * time.Second
 	KeepAlive      = 10 * time.Second
 )
+	

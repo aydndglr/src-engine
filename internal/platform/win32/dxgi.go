@@ -202,7 +202,7 @@ func (c *DxgiCapturer) Start() error {
 
 	ptr := C.dxgi_init(C.int(c.index))
 	if ptr == nil {
-		return fmt.Errorf("DXGI başlatılamadı (GPU sürücüsü veya ekran hatası)")
+		return fmt.Errorf("DXGI failed to initialize (GPU driver or display error)")
 	}
 
 	c.mgr = ptr

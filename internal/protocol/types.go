@@ -69,7 +69,7 @@ func EncodeInputEvent(ev InputEvent) ([]byte, error) {
 
 	textBytes := []byte(ev.Text)
 	if len(textBytes) > maxTextLen {
-		return nil, errors.New("text çok uzun")
+		return nil, errors.New("The text is too long.")
 	}
 
 	_ = binary.Write(buf, binary.LittleEndian, uint16(len(textBytes)))
@@ -82,7 +82,7 @@ func EncodeInputEvent(ev InputEvent) ([]byte, error) {
 
 func DecodeInputEvent(data []byte) (InputEvent, error) {
 	if len(data) < inputHeaderV1Size {
-		return InputEvent{}, errors.New("paket çok kısa")
+		return InputEvent{}, errors.New("The package is very short.")
 	}
 
 	dev := InputDevice(data[0])
@@ -98,10 +98,10 @@ func DecodeInputEvent(data []byte) (InputEvent, error) {
 	if len(data) >= inputHeaderV2Size {
 		textLen := int(binary.LittleEndian.Uint16(data[12:14]))
 		if textLen < 0 || textLen > maxTextLen {
-			return InputEvent{}, errors.New("geçersiz text uzunluğu")
+			return InputEvent{}, errors.New("invalid text length")
 		}
 		if len(data) < inputHeaderV2Size+textLen {
-			return InputEvent{}, errors.New("paket eksik (text)")
+			return InputEvent{}, errors.New("missing package (text)")
 		}
 
 		txt := ""

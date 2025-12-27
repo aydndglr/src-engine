@@ -28,7 +28,7 @@ func (m *Manager) SetCallback(cb func(string)) {
 
 // Start: 9004 portunu dinler
 func (m *Manager) Start(ln net.Listener) {
-	fmt.Printf("💬 Sohbet Servisi Hazır (Port: %d)\n", config.PortChat)
+	fmt.Printf("💬 Chat Service Ready (Port: %d)\n", config.PortChat)
 
 	for {
 		conn, err := ln.Accept()
@@ -45,7 +45,7 @@ func (m *Manager) Start(ln net.Listener) {
 		m.activeConn = conn
 		m.mu.Unlock()
 
-		fmt.Println("💬 Sohbet Bağlantısı Kuruldu.")
+		fmt.Println("💬 Chat connection established..")
 		go m.readLoop(conn)
 	}
 }
@@ -56,7 +56,7 @@ func (m *Manager) Send(text string) error {
 	defer m.mu.Unlock()
 
 	if m.activeConn == nil {
-		return fmt.Errorf("bağlantı yok")
+		return fmt.Errorf("No connection")
 	}
 
 	data := []byte(text)
@@ -83,7 +83,7 @@ func (m *Manager) readLoop(conn net.Conn) {
 			m.activeConn = nil
 		}
 		m.mu.Unlock()
-		fmt.Println("💬 Sohbet Bağlantısı Koptu.")
+		fmt.Println("💬 Chat connection lost.")
 	}()
 
 	header := make([]byte, 4)
@@ -108,7 +108,7 @@ func (m *Manager) readLoop(conn net.Conn) {
 		text := string(msgBuf)
 		
 		// Logla veya UI'a ilet
-		fmt.Printf("📩 Gelen Mesaj: %s\n", text)
+		fmt.Printf("📩 Incoming Message: %s\n", text)
 		
 		if m.onMessage != nil {
 			m.onMessage(text)
