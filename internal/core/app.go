@@ -138,6 +138,7 @@ func (a *App) Run() {
 		go func() { a.AudioSvc.Start(mustListen(a.Network, config.PortAudio)) }()
 		go func() { a.FileSvc.Start(mustListen(a.Network, config.PortFile)) }() // Dosya servisi zaten burada aktif
 		go func() { a.ChatSvc.Start(mustListen(a.Network, config.PortChat)) }()
+		
 	}
 
 	fmt.Println("✅ SYSTEM ACTIVE! (Close with CTRL+C)")
@@ -154,12 +155,13 @@ func (a *App) Run() {
 
 func (a *App) startProxy(port int, targetIP string) {
 	// Yerel UI (Electron) için dinle
+	localAddr := fmt.Sprintf("127.0.0.1:%d", port)
 	localListener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		fmt.Printf("❌ Proxy Error (Port %d): %v\n", port, err)
 		return
 	}
-	
+	fmt.Printf("🔗 Proxy Ready: %s -> %s:%d\n", localAddr, targetIP, port)
 	for {
 		// Electron bağlandı
 		localConn, err := localListener.Accept()

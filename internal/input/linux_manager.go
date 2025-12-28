@@ -4,11 +4,10 @@ package input
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
 	"strconv"
 	"strings"
-	"src-engine/internal/protocol"
+	"src-engine-v2/internal/protocol"
 )
 
 // LinuxManager: Linux için xdotool kullanan yönetici

@@ -3,7 +3,6 @@
 package video
 
 import (
-	"errors"
 	"image"
 	"time"
 )

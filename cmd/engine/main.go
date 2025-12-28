@@ -1,3 +1,4 @@
+/*
 package main
 
 import (
@@ -38,6 +39,78 @@ func main() {
 	cfg := config.NewDefaultConfig()
 	cfg.Network.Hostname = *hostname
 	cfg.Network.ConnectIP = *connectIP // 🆕 Config'e eklendi
+	cfg.Video.Width = *width
+	cfg.Video.Height = *height
+	cfg.Video.FPS = *fps
+	cfg.Video.RawMode = *raw
+
+	// Lisans ve Deneme Modu Mantığı
+	if *authKey == "" {
+		// Key girilmemiş -> Ücretsiz Deneme Modu (Default Key Kullanılır)
+		cfg.AuthKey = DefaultFreeKey
+		// Core katmanına deneme modu olduğunu bildiriyoruz
+		os.Setenv("SRC_TRIAL_MODE", "1") 
+	} else {
+		// Key girilmiş -> Premium Mod (Süre sınırını Headscale/Sunucu yönetir)
+		cfg.AuthKey = *authKey
+		os.Setenv("SRC_TRIAL_MODE", "0")
+	}
+
+	// Uygulamayı Oluştur ve Başlat
+	app := core.NewApp(cfg)
+	app.Run()
+}
+	*/
+
+package main
+
+import (
+	"flag"
+	"os"
+	"src-engine-v2/internal/config"
+	"src-engine-v2/internal/core"
+)
+
+// Senin oluşturduğun 10 yıllık genel key (Ücretsiz Mod İçin)
+const DefaultFreeKey = "b8a9818f518d3f98700d91507efe87caa88b48586ebcf099"
+
+func main() {
+	// Sistem adını otomatik al
+	sysHostname, _ := os.Hostname()
+	if sysHostname == "" {
+		sysHostname = "src-engine-client"
+	}
+
+	// Parametreleri al
+	hostname := flag.String("host", sysHostname, "Device Name (Default: Computer Name)")
+	authKey := flag.String("key", "", "Headscale Auth Key (120 minutes Free Mode if left blank)")
+	
+	// 🆕 MEVCUT: Client Modu için Hedef IP
+	connectIP := flag.String("connect", "", "Target IP Address to Connect To (Client Mode)")
+
+	// 🔥 YENİ PARAMETRE: Oturum Şifresi (Protocol Handshake için)
+	// Eğer boş bırakılırsa şifresiz işlem yapılır.
+	password := flag.String("password", "", "Session Password (Optional)")
+
+	// Video Ayarları
+	width := flag.Int("w", 0, "Width (0=Auto)")
+	height := flag.Int("h", 0, "Height (0=Auto)")
+	fps := flag.Int("fps", 25, "FPS")
+	
+	// Raw Mod (VLC vb. için headersız yayın)
+	raw := flag.Bool("raw", false, "Raw video mode (VLC-FfPlay compatible)")
+
+	flag.Parse()
+
+	// Ayarları Hazırla
+	cfg := config.NewDefaultConfig()
+	cfg.Network.Hostname = *hostname
+	cfg.Network.ConnectIP = *connectIP
+	
+	// 🔥 Şifreyi Config'e kaydet
+	// (Bir sonraki adımda config.go dosyasına SessionPassword alanını ekleyeceğiz)
+	cfg.SessionPassword = *password 
+
 	cfg.Video.Width = *width
 	cfg.Video.Height = *height
 	cfg.Video.FPS = *fps
